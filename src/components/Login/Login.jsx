@@ -16,11 +16,18 @@ const Login = () => {
           //reset error
       setRegisterError('');
       setSuccess('');
+      
         //add validation
         signInWithEmailAndPassword(auth, email, password)
             .then(result => {
                 console.log(result.user);
-                setSuccess('User Logged In Successfully');
+                if(result.user.emailVerified)
+                {
+                    setSuccess('User Logged In Successfully');
+                }
+                else {
+                    alert("please verify your email address")
+                }
             })
             .catch(error => {
                 console.error(error);

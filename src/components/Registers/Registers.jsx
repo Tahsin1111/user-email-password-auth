@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
 import { useState } from "react";
 import { FaEye,FaEyeSlash } from 'react-icons/fa';
@@ -10,6 +10,7 @@ const Registers = () => {
     const [showPassword,setShowPassword] = useState(false)
     const handleRegister = e =>{
       e.preventDefault();
+      const name = e.target.name.value;
       const email = e.target.email.value;
       const password = e.target.password.value;
       const accepted = e.target.terms.checked;
@@ -30,6 +31,21 @@ const Registers = () => {
       .then(result => {
         console.log(result.user);
         setSuccess('User Created Successfully');
+         
+        // update profile
+        updateProfile(result.user,{
+          displayName: name,
+          photoURL: "https://example.com/jane-q-user/profile.jpg"
+        }  )
+        .then(() => console.log("profile updated") )
+        .catch()
+
+        // send verification email :
+        sendEmailVerification(result.user)
+        .then(() =>{
+          alert('Please check your email and verify your account');
+           
+        })
       })
       .catch(error =>{
         console.error(error);
@@ -42,6 +58,8 @@ const Registers = () => {
             <div className="mx-auto md:w-1/2">
             <h2 className="text-3xl mb-8 ">Please Register</h2>
               <form onSubmit={handleRegister}>
+                  <input  className="mb-4 w-full py-2 px-4" type="text" placeholder="Your Name" name="name" required />
+                  <br />
                   <input  className="mb-4 w-full py-2 px-4" type="email" placeholder="Your Email" name="email" required />
                   <br />
                   <div className="relative">
